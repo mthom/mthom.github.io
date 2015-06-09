@@ -1,0 +1,3 @@
+# About page
+
+Notes about functional programming, math, computer science, other things.

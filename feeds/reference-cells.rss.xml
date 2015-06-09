@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<rss version="2.0">
+ <channel>
+  <title>Mark Thom: Posts tagged 'reference cells'</title>
+  <description>Mark Thom: Posts tagged 'reference cells'</description>
+  <link>http://mthom.github.io/tags/reference-cells.html</link>
+  <lastBuildDate>Tue, 09 Jun 2015 01:38:12 UT</lastBuildDate>
+  <pubDate>Tue, 09 Jun 2015 01:38:12 UT</pubDate>
+  <ttl>1800</ttl>
+  <item>
+   <title>Shen Kata #1: Type-safe reference cells</title>
+   <link>http://mthom.github.io/blog/2015/06/08/shen-kata-1-type-safe-reference-cells/?utm_source=reference-cells&amp;utm_medium=RSS</link>
+   <guid>urn:http-mthom-github-io:-blog-2015-06-08-shen-kata-1-type-safe-reference-cells</guid>
+   <pubDate>Tue, 09 Jun 2015 01:38:12 UT</pubDate>
+   <description>&lt;html&gt;
+&lt;p&gt;Unlike many other eager, statically typed functional languages that emphasize computing with immutable values, Shen lacks native support for reference cells. Let&amp;rsquo;s add our own.&lt;/p&gt;
+&lt;!-- more--&gt;
+
+&lt;h2 id="first-class-locally-scoped-mutable-values"&gt;First-class, locally scoped mutable values&lt;/h2&gt;
+
+&lt;p&gt;We can think of a reference cell as a box containing a pointer to a value of any initial type. In ML family languages, reference cells are associated to interfaces similar to that of the Standard ML signature&lt;/p&gt;
+
+&lt;div class="brush: standard-ml"&gt;
+ &lt;table class="sourcetable"&gt;
+  &lt;tbody&gt;
+   &lt;tr&gt;
+    &lt;td class="linenos"&gt;
+     &lt;div class="linenodiv"&gt;
+      &lt;pre&gt;1
+2
+3
+4
+5
+6
+7&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;
+    &lt;td class="code"&gt;
+     &lt;div class="source"&gt;
+      &lt;pre&gt;signature REF =
+sig 
+  type &amp;#39;a ref
+  val ref : &amp;#39;a -&amp;gt; &amp;#39;a ref
+  val writeref : &amp;#39;a ref -&amp;gt; &amp;#39;a -&amp;gt; ()
+  val readref : &amp;#39;a ref -&amp;gt; &amp;#39;a
+end
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;code&gt;'a ref&lt;/code&gt; is the type of a reference cell, where the ML type &lt;code&gt;'a&lt;/code&gt; is the type of its contents. &lt;code&gt;ref&lt;/code&gt; creates a reference cell containing its parameter value, &lt;code&gt;writeref&lt;/code&gt; replaces the contents of a reference cell with a value of the annotated type of that cell, and &lt;code&gt;readref&lt;/code&gt; extracts the contents of a cell.&lt;/p&gt;
+
+&lt;p&gt;A write made to a reference cell is propagated to all other data structures containing that cell, which is itself an immutable value. In that sense, reference cells are first-class, locally scoped mutable values of the sort we&amp;rsquo;re accustomed to using in imperative languages.&lt;/p&gt;
+
+&lt;p&gt;As in imperative languages, they require a kind of temporal reasoning that is safely neglected when dealing only with immutable values, which is one of the stronger selling points of purely functional languages.&lt;/p&gt;
+
+&lt;p&gt;Why bother with reference cells then? At times, the use of mutation can&amp;rsquo;t be avoided, usually for the sake of efficiency. Some data structures lack fast, purely functional implementations. Others are self-referential and can&amp;rsquo;t otherwise be implemented without resorting to laziness, which comes with its own pitfalls and limitations.&lt;/p&gt;
+
+&lt;h2 id="shen-lacks-reference-cells"&gt;Shen lacks reference cells&lt;/h2&gt;
+
+&lt;p&gt;If Shen provided reference cells natively, there would be no reason to add our own. Any candidate for an ad-hoc reference cell in Shen would have to support mutation already. Shen provides mutable values in two principal ways, through vectors and through global assignments.&lt;/p&gt;
+
+&lt;p&gt;Global assignments are not locally scoped, since they&amp;rsquo;re accessible from anywhere in a Shen program if the name of the assignment is known.&lt;/p&gt;
+
+&lt;p&gt;Shen vectors are first-class, mutable, homogenous containers with a native type theory in line with what we want for ref types, apeing the example of ML. Vectors have the additional property that they may be grown and shrunk an element at a time from the head. In contrast, a reference cell must refer to a single location in memory that persists with the cell, which is to say that an unfettered vector representation allows the programmer to violate core semantic assumptions behind the creation and use of reference cells.&lt;/p&gt;
+
+&lt;h2 id="a-shen-implementation"&gt;A Shen implementation&lt;/h2&gt;
+
+&lt;p&gt;This suggests we should start with vectors as a data representation, and constrain them somehow. One approach is to close two functions over a single cell vector containing an initial value of type &lt;code&gt;A&lt;/code&gt;. This prevents the user of the reference cell from accessing the internal vector representation by any means other than that afforded by the two functions, which we will implement as a getter/setter pair. Following the types in the ML signature, we obtain type signatures for these functions,&lt;/p&gt;
+
+&lt;p&gt;the getter, &lt;code&gt;ref-reader : (one-cell-vector A) --&amp;gt; (lazy A)&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;and the setter, &lt;code&gt;ref-writer : (one-cell-vector A) --&amp;gt; A --&amp;gt; unit&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;ref-reader&lt;/code&gt;, given a one-cell vector, returns a value of type &lt;code&gt;(lazy
+A)&lt;/code&gt;, whose semantics are identical to a function that takes no arguments.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;ref-writer&lt;/code&gt; writes a value of type &lt;code&gt;A&lt;/code&gt; to a one-cell vector.&lt;/p&gt;
+
+&lt;p&gt;Natively, Shen has a vector type &lt;code&gt;(vector A)&lt;/code&gt;, which types a vector of elements of type &lt;code&gt;A&lt;/code&gt;. We have to define the &lt;code&gt;(one-cell-vector A)&lt;/code&gt; type ourselves, which we do using the sequent rules&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; (datatype one-cell-vector
+   X : A;
+   ________________________________
+   (@v X &amp;lt;&amp;gt;) : (one-cell-vector A);
+
+   __________________________________________
+   V : (one-cell-vector A) &amp;gt;&amp;gt; V : (vector A);)&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here we give two rules of inference. The first says that a Shen expression matching the template &lt;code&gt;(@v X &amp;lt;&amp;gt;)&lt;/code&gt; can be inferred to be of type &lt;code&gt;(one-cell-vector A)&lt;/code&gt; if the subexpression &lt;code&gt;X&lt;/code&gt; can be inferred to be of type &lt;code&gt;A&lt;/code&gt;, where &lt;code&gt;A&lt;/code&gt; is a type variable and hence may be substituted for any Shen type (type symbols titled in lower case name concrete types).&lt;/p&gt;
+
+&lt;p&gt;The second rule is subtly different. It says that, if it has been proven that a Shen expression &lt;code&gt;V&lt;/code&gt; is of type &lt;code&gt;(one-cell-vector A)&lt;/code&gt;, (really, &lt;code&gt;V&lt;/code&gt; is a template that may be substituted for any Shen expression), then &lt;code&gt;V&lt;/code&gt; has the type &lt;code&gt;(vector A)&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;These rules stringently constrain the number of ways in which we can generate elements of &lt;code&gt;(one-cell-vector A)&lt;/code&gt;. Either we&amp;rsquo;ve called a type-checked function that returns a value of that type, or we&amp;rsquo;ve generated one directly using the &lt;code&gt;(@v X &amp;lt;&amp;gt;)&lt;/code&gt; template, where &lt;code&gt;X&lt;/code&gt; is an expression producing a value of type &lt;code&gt;A&lt;/code&gt;. We could easily enrich the type theory to allow other semantically valid ways of generating one cell vectors, but for our purposes these rules suffice.&lt;/p&gt;
+
+&lt;p&gt;The unit type is inhabited by a single value, itself called unit and denoted []. Shen lacks a native unit type, but we can easily add our own:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;(datatype unit-type
+ __________
+ [] : unit;)&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Equipped with the necessary types, we define the &lt;code&gt;ref-reader&lt;/code&gt; and &lt;code&gt;ref-writer&lt;/code&gt; functions.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;(define ref-reader
+  { (one-cell-vector A) --&amp;gt; (lazy A) } 
+  R -&amp;gt; (freeze (&amp;lt;-vector R 1)))
+
+(define ref-writer
+  { (one-cell-vector A) --&amp;gt; A --&amp;gt; unit }
+  R X -&amp;gt; (do (vector-&amp;gt; R 1 X) []))&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;ref-reader&lt;/code&gt; suspends (&amp;ldquo;freezes&amp;rdquo;) a computation on a one cell vector &lt;code&gt;R&lt;/code&gt;, which reads the value of that cell whenever the computation is thawed (Shen vectors are 1-indexed).&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;ref-writer&lt;/code&gt; sequences two expressions in a &lt;code&gt;do&lt;/code&gt; form. The first writes the value &lt;code&gt;X&lt;/code&gt; to the cell of &lt;code&gt;R&lt;/code&gt;, the second evaluates to unit.&lt;/p&gt;
+
+&lt;p&gt;We now implement &lt;code&gt;ref&lt;/code&gt;, again in keeping with the type given in the ML signature.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;(define ref
+   { A --&amp;gt; (ref A) }
+   X -&amp;gt; (let V (@v X &amp;lt;&amp;gt;)
+	  (@p (ref-reader V) (ref-writer V))))&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In Shen, all functions are curried by default, so that the function &lt;code&gt;(ref-writer V)&lt;/code&gt; has type &lt;code&gt;A --&amp;gt; unit&lt;/code&gt;. &lt;code&gt;(ref A)&lt;/code&gt; is defined in the datatype&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;(datatype ref-types
+   V : (one-cell-vector A);
+   _____________________________________________
+   (@p (ref-reader V) (ref-writer V)) : (ref A);
+
+   _____________________________________________
+   R : (ref A) &amp;gt;&amp;gt; R : ((lazy A) * (A --&amp;gt; unit));)&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Since in the context of the definition of &lt;code&gt;ref&lt;/code&gt;, we can prove that the expression bound to &lt;code&gt;V&lt;/code&gt; is a one-cell vector, it follows by the first rule that the ordered pair &lt;code&gt;(@p (ref-reader V) (ref-writer V))&lt;/code&gt; inhabits the type &lt;code&gt;(ref A)&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The second rule says that a value &lt;code&gt;R&lt;/code&gt; known to be of type &lt;code&gt;(ref A)&lt;/code&gt; is an ordered pair in which the first element has type &lt;code&gt;(lazy A)&lt;/code&gt; and the second type &lt;code&gt;(A --&amp;gt; unit)&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;And that is all. The type rules guarantee that any value proved to be of type &lt;code&gt;(ref A)&lt;/code&gt; is an ordered pair of the reader and writer types, closing over a common one-cell vector, where the reader and writer functions are generated using the &lt;code&gt;ref-reader&lt;/code&gt; and &lt;code&gt;ref-writer&lt;/code&gt; functions. The absence of rules qualifying values of &lt;code&gt;(ref A)&lt;/code&gt; in any other way cause any other attempts to type values as &lt;code&gt;(ref A)&lt;/code&gt; to fail.&lt;/p&gt;
+
+&lt;p&gt;It is now easy to define the Shen versions of the &lt;code&gt;readref&lt;/code&gt; and &lt;code&gt;writeref&lt;/code&gt; functions.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;(define &amp;lt;-r
+   { (ref A) --&amp;gt; A }
+   R -&amp;gt; (thaw (fst R)))
+
+(define r-&amp;gt;
+   { (ref A) --&amp;gt; A --&amp;gt; unit }
+   R X -&amp;gt; (do ((snd R) X) []))&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The functions &lt;code&gt;fst&lt;/code&gt; and &lt;code&gt;snd&lt;/code&gt; project onto the first and second elements of an ordered pair respectively.&lt;/p&gt;
+
+&lt;p&gt;The complete Shen source for the exercise is &lt;a href="https://github.com/mthom/shen-reference-cells/blob/master/ref-cells.shen"&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id="example-block-scanner"&gt;Example: block-scanner&lt;/h2&gt;
+
+&lt;p&gt;As an example of reference cells, we adapt the text block scanner closure from Doug Hoyte&amp;rsquo;s book, &lt;a href="http://letoverlambda.com/index.cl/guest/chap2.html#sec_6"&gt;Let Over Lambda&lt;/a&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;(define char-scanner
+  { string --&amp;gt; (ref string) --&amp;gt; string --&amp;gt; unit }
+  Trig Curr (@s C Str) -&amp;gt; (char-scanner Trig Curr Str) where (= (&amp;lt;-r Curr) "")
+  Trig Curr (@s C Str) -&amp;gt; (do (r-&amp;gt; Curr (if (= (hdstr (&amp;lt;-r Curr)) C)
+					       (tlstr (&amp;lt;-r Curr))
+					       Trig))
+			      (char-scanner Trig Curr Str))
+  Trig Curr "" -&amp;gt; [])
+
+(define block-scanner
+  { string --&amp;gt; string --&amp;gt; boolean }
+  Trig -&amp;gt; (let Curr (ref Trig)
+	    (/. DataString
+		(do
+		 (char-scanner Trig Curr DataString)
+		 (= (&amp;lt;-r Curr) "")))))
+
+(set *scanner* (block-scanner "jihad"))
+((value *scanner*) "we will start ")
+((value *scanner*) "the ji")
+((value *scanner*) "had tomorrow.")&lt;/code&gt;&lt;/pre&gt;&lt;/html&gt;</description></item></channel></rss>
