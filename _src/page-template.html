@@ -80,10 +80,7 @@
               @uri-path being "/index.html" }
           @(when (string-ci=? uri-path "/index.html")
             @list{
-              <h1>Welcome</h1>
-              <p>Here is some text that only goes on the home page,
-                because <code>@"@"uri-path</code> is
-                <code>/index.html</code>.</p> })
+              <p>Thoughts on programming and other stuff.</p> })
           @;{ Index pages for posts have @tag that's not #f }
           @(when tag
             @list{<h1>Posts tagged <em>@|tag|</em></h1>})
