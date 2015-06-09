@@ -203,7 +203,7 @@ It is now easy to define the Shen versions of the `readref` and
 
 (define r->
    { (ref A) --> A --> unit }
-   R X -> (do ((snd R) X) []))
+   R X -> ((snd R) X))
 ```
    
 The functions `fst` and `snd` project onto the first and second
