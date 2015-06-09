@@ -207,7 +207,7 @@ A)</code>, whose semantics are identical to a function that takes no arguments.<
 
 (define r-&gt;
    { (ref A) --&gt; A --&gt; unit }
-   R X -&gt; (do ((snd R) X) []))</code></pre>
+   R X -&gt; ((snd R) X))</code></pre>
 
 <p>The functions <code>fst</code> and <code>snd</code> project onto the first and second elements of an ordered pair respectively.</p>
 

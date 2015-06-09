@@ -124,7 +124,7 @@ A)&lt;/code&gt;, whose semantics are identical to a function that takes no argum
 
 (define r-&amp;gt;
    { (ref A) --&amp;gt; A --&amp;gt; unit }
-   R X -&amp;gt; (do ((snd R) X) []))&lt;/code&gt;&lt;/pre&gt;
+   R X -&amp;gt; ((snd R) X))&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;The functions &lt;code&gt;fst&lt;/code&gt; and &lt;code&gt;snd&lt;/code&gt; project onto the first and second elements of an ordered pair respectively.&lt;/p&gt;
 
