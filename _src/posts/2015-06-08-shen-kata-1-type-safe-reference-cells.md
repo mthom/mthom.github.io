@@ -123,9 +123,8 @@ expression producing a value of type `A`. We could easily enrich
 the type theory to allow other semantically valid ways of generating
 one cell vectors, but for our purposes these rules suffice.
 
-The unit type is inhabited by a single value, itself called unit and
-denoted []. Shen lacks a native unit type, but we can easily add our
-own:
+The unit type is pre-defined in Shen, and is uninhabited
+(no values have the type unit by default). We add our own.
 
 ```
 (datatype unit-type

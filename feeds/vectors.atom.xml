@@ -74,7 +74,7 @@ A)&lt;/code&gt;, whose semantics are identical to a function that takes no argum
 
 &lt;p&gt;These rules stringently constrain the number of ways in which we can generate elements of &lt;code&gt;(one-cell-vector A)&lt;/code&gt;. Either we&amp;rsquo;ve called a type-checked function that returns a value of that type, or we&amp;rsquo;ve generated one directly using the &lt;code&gt;(@v X &amp;lt;&amp;gt;)&lt;/code&gt; template, where &lt;code&gt;X&lt;/code&gt; is an expression producing a value of type &lt;code&gt;A&lt;/code&gt;. We could easily enrich the type theory to allow other semantically valid ways of generating one cell vectors, but for our purposes these rules suffice.&lt;/p&gt;
 
-&lt;p&gt;The unit type is inhabited by a single value, itself called unit and denoted []. Shen lacks a native unit type, but we can easily add our own:&lt;/p&gt;
+&lt;p&gt;The unit type is pre-defined in Shen, and is uninhabited (no values have the type unit by default). We add our own.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;(datatype unit-type
  __________

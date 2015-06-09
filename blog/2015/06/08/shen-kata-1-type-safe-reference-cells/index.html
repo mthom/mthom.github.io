@@ -156,7 +156,7 @@ A)</code>, whose semantics are identical to a function that takes no arguments.<
 
 <p>These rules stringently constrain the number of ways in which we can generate elements of <code>(one-cell-vector A)</code>. Either we&rsquo;ve called a type-checked function that returns a value of that type, or we&rsquo;ve generated one directly using the <code>(@v X &lt;&gt;)</code> template, where <code>X</code> is an expression producing a value of type <code>A</code>. We could easily enrich the type theory to allow other semantically valid ways of generating one cell vectors, but for our purposes these rules suffice.</p>
 
-<p>The unit type is inhabited by a single value, itself called unit and denoted []. Shen lacks a native unit type, but we can easily add our own:</p>
+<p>The unit type is pre-defined in Shen, and is uninhabited (no values have the type unit by default). We add our own.</p>
 
 <pre><code>(datatype unit-type
  __________
