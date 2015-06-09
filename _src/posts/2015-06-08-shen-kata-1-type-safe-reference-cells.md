@@ -15,7 +15,7 @@ pointer to a value of any initial type. In ML family languages,
 reference cells are associated to interfaces similar to that of the
 Standard ML signature
 
-```standard-ml
+```
 signature REF =
 sig 
   type 'a ref

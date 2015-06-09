@@ -103,31 +103,13 @@
 
 <p>We can think of a reference cell as a box containing a pointer to a value of any initial type. In ML family languages, reference cells are associated to interfaces similar to that of the Standard ML signature</p>
 
-<div class="brush: standard-ml">
- <table class="sourcetable">
-  <tbody>
-   <tr>
-    <td class="linenos">
-     <div class="linenodiv">
-      <pre>1
-2
-3
-4
-5
-6
-7</pre></div></td>
-    <td class="code">
-     <div class="source">
-      <pre>signature REF =
+<pre><code>signature REF =
 sig 
-  type &#39;a ref
-  val ref : &#39;a -&gt; &#39;a ref
-  val writeref : &#39;a ref -&gt; &#39;a -&gt; ()
-  val readref : &#39;a ref -&gt; &#39;a
-end
-</pre></div>
-</td></tr></tbody></table>
-</div>
+  type 'a ref
+  val ref : 'a -&gt; 'a ref
+  val writeref : 'a ref -&gt; 'a -&gt; ()
+  val readref : 'a ref -&gt; 'a
+end</code></pre>
 
 <p><code>'a ref</code> is the type of a reference cell, where the ML type <code>'a</code> is the type of its contents. <code>ref</code> creates a reference cell containing its parameter value, <code>writeref</code> replaces the contents of a reference cell with a value of the annotated type of that cell, and <code>readref</code> extracts the contents of a cell.</p>
 

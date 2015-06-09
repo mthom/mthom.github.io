@@ -20,31 +20,13 @@
 
 &lt;p&gt;We can think of a reference cell as a box containing a pointer to a value of any initial type. In ML family languages, reference cells are associated to interfaces similar to that of the Standard ML signature&lt;/p&gt;
 
-&lt;div class="brush: standard-ml"&gt;
- &lt;table class="sourcetable"&gt;
-  &lt;tbody&gt;
-   &lt;tr&gt;
-    &lt;td class="linenos"&gt;
-     &lt;div class="linenodiv"&gt;
-      &lt;pre&gt;1
-2
-3
-4
-5
-6
-7&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;
-    &lt;td class="code"&gt;
-     &lt;div class="source"&gt;
-      &lt;pre&gt;signature REF =
+&lt;pre&gt;&lt;code&gt;signature REF =
 sig 
-  type &amp;#39;a ref
-  val ref : &amp;#39;a -&amp;gt; &amp;#39;a ref
-  val writeref : &amp;#39;a ref -&amp;gt; &amp;#39;a -&amp;gt; ()
-  val readref : &amp;#39;a ref -&amp;gt; &amp;#39;a
-end
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
-&lt;/div&gt;
+  type 'a ref
+  val ref : 'a -&amp;gt; 'a ref
+  val writeref : 'a ref -&amp;gt; 'a -&amp;gt; ()
+  val readref : 'a ref -&amp;gt; 'a
+end&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;&lt;code&gt;'a ref&lt;/code&gt; is the type of a reference cell, where the ML type &lt;code&gt;'a&lt;/code&gt; is the type of its contents. &lt;code&gt;ref&lt;/code&gt; creates a reference cell containing its parameter value, &lt;code&gt;writeref&lt;/code&gt; replaces the contents of a reference cell with a value of the annotated type of that cell, and &lt;code&gt;readref&lt;/code&gt; extracts the contents of a cell.&lt;/p&gt;
 
