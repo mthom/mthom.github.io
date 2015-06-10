@@ -147,11 +147,11 @@ A)&lt;/code&gt;, whose semantics are identical to a function that takes no argum
   { string --&amp;gt; string --&amp;gt; boolean }
   Trig -&amp;gt; (let Curr (ref Trig)
 	    (/. DataString
-		(do
-		 (char-scanner Trig Curr DataString)
-		 (= (&amp;lt;-r Curr) "")))))
+			(do (char-scanner Trig Curr DataString)
+				(= (&amp;lt;-r Curr) "")))))
 
 (set *scanner* (block-scanner "jihad"))
+
 ((value *scanner*) "we will start ")
 ((value *scanner*) "the ji")
 ((value *scanner*) "had tomorrow.")&lt;/code&gt;&lt;/pre&gt;&lt;/html&gt;</description></item></channel></rss>

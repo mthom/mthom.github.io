@@ -231,11 +231,11 @@ closure from Doug Hoyte's book,
   { string --> string --> boolean }
   Trig -> (let Curr (ref Trig)
 	    (/. DataString
-		(do
-		 (char-scanner Trig Curr DataString)
-		 (= (<-r Curr) "")))))
+			(do (char-scanner Trig Curr DataString)
+				(= (<-r Curr) "")))))
 
 (set *scanner* (block-scanner "jihad"))
+
 ((value *scanner*) "we will start ")
 ((value *scanner*) "the ji")
 ((value *scanner*) "had tomorrow.")

@@ -230,11 +230,11 @@ A)</code>, whose semantics are identical to a function that takes no arguments.<
   { string --&gt; string --&gt; boolean }
   Trig -&gt; (let Curr (ref Trig)
 	    (/. DataString
-		(do
-		 (char-scanner Trig Curr DataString)
-		 (= (&lt;-r Curr) "")))))
+			(do (char-scanner Trig Curr DataString)
+				(= (&lt;-r Curr) "")))))
 
 (set *scanner* (block-scanner "jihad"))
+
 ((value *scanner*) "we will start ")
 ((value *scanner*) "the ji")
 ((value *scanner*) "had tomorrow.")</code></pre>
