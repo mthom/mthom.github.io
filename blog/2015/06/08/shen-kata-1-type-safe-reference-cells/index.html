@@ -104,7 +104,7 @@
 <p>We can think of a reference cell as a box containing a pointer to a value of any initial type. In ML family languages, reference cells are associated to interfaces similar to that of the Standard ML signature</p>
 
 <pre><code>signature REF =
-sig 
+sig
   type 'a ref
   val ref : 'a -&gt; 'a ref
   val writeref : 'a ref -&gt; 'a -&gt; ()
@@ -165,7 +165,7 @@ A)</code>, whose semantics are identical to a function that takes no arguments.<
 <p>Equipped with the necessary types, we define the <code>ref-reader</code> and <code>ref-writer</code> functions.</p>
 
 <pre><code>(define ref-reader
-  { (one-cell-vector A) --&gt; (lazy A) } 
+  { (one-cell-vector A) --&gt; (lazy A) }
   R -&gt; (freeze (&lt;-vector R 1)))
 
 (define ref-writer
@@ -230,8 +230,8 @@ A)</code>, whose semantics are identical to a function that takes no arguments.<
   { string --&gt; string --&gt; boolean }
   Trig -&gt; (let Curr (ref Trig)
 	    (/. DataString
-			(do (char-scanner Trig Curr DataString)
-				(= (&lt;-r Curr) "")))))
+		(do (char-scanner Trig Curr DataString)
+		    (= (&lt;-r Curr) "")))))
 
 (set *scanner* (block-scanner "jihad"))
 

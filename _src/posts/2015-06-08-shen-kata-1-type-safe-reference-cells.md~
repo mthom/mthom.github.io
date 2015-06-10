@@ -17,7 +17,7 @@ Standard ML signature
 
 ```
 signature REF =
-sig
+sig 
   type 'a ref
   val ref : 'a -> 'a ref
   val writeref : 'a ref -> 'a -> ()
@@ -102,7 +102,7 @@ type ourselves, which we do using the sequent rules
    __________________________________________
    V : (one-cell-vector A) >> V : (vector A);)
 ```
-
+   
 Here we give two rules of inference.  The first says that a Shen
 expression matching the template `(@v X <>)` can be inferred to be of
 type `(one-cell-vector A)` if the subexpression `X` can be inferred to
@@ -137,7 +137,7 @@ Equipped with the necessary types, we define the `ref-reader` and
 
 ```
 (define ref-reader
-  { (one-cell-vector A) --> (lazy A) }
+  { (one-cell-vector A) --> (lazy A) } 
   R -> (freeze (<-vector R 1)))
 
 (define ref-writer
@@ -204,7 +204,7 @@ It is now easy to define the Shen versions of the `readref` and
    { (ref A) --> A --> unit }
    R X -> ((snd R) X))
 ```
-
+   
 The functions `fst` and `snd` project onto the first and second
 elements of an ordered pair respectively.
 
@@ -231,8 +231,8 @@ closure from Doug Hoyte's book,
   { string --> string --> boolean }
   Trig -> (let Curr (ref Trig)
 	    (/. DataString
-		(do (char-scanner Trig Curr DataString)
-		    (= (<-r Curr) "")))))
+			(do (char-scanner Trig Curr DataString)
+				(= (<-r Curr) "")))))
 
 (set *scanner* (block-scanner "jihad"))
 

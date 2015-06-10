@@ -22,7 +22,7 @@
 &lt;p&gt;We can think of a reference cell as a box containing a pointer to a value of any initial type. In ML family languages, reference cells are associated to interfaces similar to that of the Standard ML signature&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;signature REF =
-sig 
+sig
   type 'a ref
   val ref : 'a -&amp;gt; 'a ref
   val writeref : 'a ref -&amp;gt; 'a -&amp;gt; ()
@@ -83,7 +83,7 @@ A)&lt;/code&gt;, whose semantics are identical to a function that takes no argum
 &lt;p&gt;Equipped with the necessary types, we define the &lt;code&gt;ref-reader&lt;/code&gt; and &lt;code&gt;ref-writer&lt;/code&gt; functions.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;(define ref-reader
-  { (one-cell-vector A) --&amp;gt; (lazy A) } 
+  { (one-cell-vector A) --&amp;gt; (lazy A) }
   R -&amp;gt; (freeze (&amp;lt;-vector R 1)))
 
 (define ref-writer
@@ -148,8 +148,8 @@ A)&lt;/code&gt;, whose semantics are identical to a function that takes no argum
   { string --&amp;gt; string --&amp;gt; boolean }
   Trig -&amp;gt; (let Curr (ref Trig)
 	    (/. DataString
-			(do (char-scanner Trig Curr DataString)
-				(= (&amp;lt;-r Curr) "")))))
+		(do (char-scanner Trig Curr DataString)
+		    (= (&amp;lt;-r Curr) "")))))
 
 (set *scanner* (block-scanner "jihad"))
 
