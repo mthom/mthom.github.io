@@ -128,7 +128,7 @@ A)&lt;/code&gt;, whose semantics are identical to a function that takes no argum
 
 &lt;p&gt;The functions &lt;code&gt;fst&lt;/code&gt; and &lt;code&gt;snd&lt;/code&gt; project onto the first and second elements of an ordered pair respectively.&lt;/p&gt;
 
-&lt;p&gt;The complete Shen source for the exercise is &lt;a href="https://github.com/mthom/shen-reference-cells/blob/master/ref-cells.shen"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The complete Shen source for the exercise is &lt;a href="https://gist.github.com/mthom/d433b7fdd1455dbec24d"&gt;here&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h2 id="example-block-scanner"&gt;Example: block-scanner&lt;/h2&gt;
 

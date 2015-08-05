@@ -209,7 +209,7 @@ The functions `fst` and `snd` project onto the first and second
 elements of an ordered pair respectively.
 
 The complete Shen source for the exercise is
-[here](https://github.com/mthom/shen-reference-cells/blob/master/ref-cells.shen).
+[here](https://gist.github.com/mthom/d433b7fdd1455dbec24d).
 
 ## Example: block-scanner
 
