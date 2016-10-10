@@ -185,7 +185,8 @@ dealing with non-polymorphic types.
   { (type-rep A) --> string --> boolean }
   X Type -> (= (type-of X) Type))
 
-(datatype generic-verification  
+(datatype generic-verification
+  if (= (type->string A) Str)
   ______________________________________
   (has-type? X Str) : verified >> X : A;)
 ```

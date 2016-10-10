@@ -122,7 +122,8 @@
   { (type-rep A) --&amp;gt; string --&amp;gt; boolean }
   X Type -&amp;gt; (= (type-of X) Type))
 
-(datatype generic-verification  
+(datatype generic-verification
+  if (= (type-&amp;gt;string A) Str)
   ______________________________________
   (has-type? X Str) : verified &amp;gt;&amp;gt; X : A;)&lt;/code&gt;&lt;/pre&gt;
 
