@@ -193,7 +193,7 @@ dealing with non-polymorphic types.
 `has-type?` checks that `X` has the type described in the string, by
 extracting its type representation from `type-of`. The rule in
 `generic-verification` proves that `X` has type `A` by appealing to
-the truth of of `has-type?` on `X` and its purported representation
+the truth of `has-type?` on `X` and its purported representation
 `Str`.
 
 Now we have type verification "for free", at least on arbitrary
@@ -224,3 +224,8 @@ types that any value may belong to.
 On the bright side, a technique like this could serve as the basis for
 some form of automatic type-driven single dispatch; think Haskell's
 typeclasses.
+
+# Source code
+
+... is available
+[here](https://gist.github.com/mthom/42878af3bf0d51274a2459faac2edaf2).

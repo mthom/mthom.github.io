@@ -211,7 +211,7 @@
   ______________________________________
   (has-type? X Str) : verified &gt;&gt; X : A;)</code></pre>
 
-<p><code>has-type?</code> checks that <code>X</code> has the type described in the string, by extracting its type representation from <code>type-of</code>. The rule in <code>generic-verification</code> proves that <code>X</code> has type <code>A</code> by appealing to the truth of of <code>has-type?</code> on <code>X</code> and its purported representation <code>Str</code>.</p>
+<p><code>has-type?</code> checks that <code>X</code> has the type described in the string, by extracting its type representation from <code>type-of</code>. The rule in <code>generic-verification</code> proves that <code>X</code> has type <code>A</code> by appealing to the truth of <code>has-type?</code> on <code>X</code> and its purported representation <code>Str</code>.</p>
 
 <p>Now we have type verification &ldquo;for free&rdquo;, at least on arbitrary concrete types, as demonstrated in the stupid and useless function <code>arbitrary-messages</code>.</p>
 
@@ -228,6 +228,10 @@
 <p>We&rsquo;ve mentioned the difficulty in dealing with polymorphic types, but another major shortcoming is that Shen&rsquo;s type system is simply too powerful for this mechanism to work well across all applications. Shen places no restrictions on the number of types or the relation among types that any value may belong to.</p>
 
 <p>On the bright side, a technique like this could serve as the basis for some form of automatic type-driven single dispatch; think Haskell&rsquo;s typeclasses.</p>
+
+<h1 id="source-code">Source code</h1>
+
+<p>&hellip; is available <a href="https://gist.github.com/mthom/42878af3bf0d51274a2459faac2edaf2">here</a>.</p>
   <footer>
     <script type="text/javascript">
       !function(d,s,id){

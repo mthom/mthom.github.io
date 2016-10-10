@@ -126,7 +126,7 @@
   ______________________________________
   (has-type? X Str) : verified &amp;gt;&amp;gt; X : A;)&lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;code&gt;has-type?&lt;/code&gt; checks that &lt;code&gt;X&lt;/code&gt; has the type described in the string, by extracting its type representation from &lt;code&gt;type-of&lt;/code&gt;. The rule in &lt;code&gt;generic-verification&lt;/code&gt; proves that &lt;code&gt;X&lt;/code&gt; has type &lt;code&gt;A&lt;/code&gt; by appealing to the truth of of &lt;code&gt;has-type?&lt;/code&gt; on &lt;code&gt;X&lt;/code&gt; and its purported representation &lt;code&gt;Str&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;has-type?&lt;/code&gt; checks that &lt;code&gt;X&lt;/code&gt; has the type described in the string, by extracting its type representation from &lt;code&gt;type-of&lt;/code&gt;. The rule in &lt;code&gt;generic-verification&lt;/code&gt; proves that &lt;code&gt;X&lt;/code&gt; has type &lt;code&gt;A&lt;/code&gt; by appealing to the truth of &lt;code&gt;has-type?&lt;/code&gt; on &lt;code&gt;X&lt;/code&gt; and its purported representation &lt;code&gt;Str&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;Now we have type verification &amp;ldquo;for free&amp;rdquo;, at least on arbitrary concrete types, as demonstrated in the stupid and useless function &lt;code&gt;arbitrary-messages&lt;/code&gt;.&lt;/p&gt;
 
@@ -142,7 +142,11 @@
 
 &lt;p&gt;We&amp;rsquo;ve mentioned the difficulty in dealing with polymorphic types, but another major shortcoming is that Shen&amp;rsquo;s type system is simply too powerful for this mechanism to work well across all applications. Shen places no restrictions on the number of types or the relation among types that any value may belong to.&lt;/p&gt;
 
-&lt;p&gt;On the bright side, a technique like this could serve as the basis for some form of automatic type-driven single dispatch; think Haskell&amp;rsquo;s typeclasses.&lt;/p&gt;&lt;/html&gt;</description></item>
+&lt;p&gt;On the bright side, a technique like this could serve as the basis for some form of automatic type-driven single dispatch; think Haskell&amp;rsquo;s typeclasses.&lt;/p&gt;
+
+&lt;h1 id="source-code"&gt;Source code&lt;/h1&gt;
+
+&lt;p&gt;&amp;hellip; is available &lt;a href="https://gist.github.com/mthom/42878af3bf0d51274a2459faac2edaf2"&gt;here&lt;/a&gt;.&lt;/p&gt;&lt;/html&gt;</description></item>
   <item>
    <title>Shen Kata #1: Type-safe reference cells</title>
    <link>http://mthom.github.io/blog/2015/06/08/shen-kata-1-type-safe-reference-cells/?utm_source=shen&amp;utm_medium=RSS</link>
