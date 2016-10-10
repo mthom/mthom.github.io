@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<rss version="2.0">
+ <channel>
+  <title>Mark Thom: Posts tagged 'reflection'</title>
+  <description>Mark Thom: Posts tagged 'reflection'</description>
+  <link>http://mthom.github.io/tags/reflection.html</link>
+  <lastBuildDate>Mon, 10 Oct 2016 14:27:38 UT</lastBuildDate>
+  <pubDate>Mon, 10 Oct 2016 14:27:38 UT</pubDate>
+  <ttl>1800</ttl>
+  <item>
+   <title>Poor man's dynamic dispatch with types in Shen</title>
+   <link>http://mthom.github.io/blog/2016/10/10/poor-man-s-dynamic-dispatch-with-types-in-shen/?utm_source=reflection&amp;utm_medium=RSS</link>
+   <guid>urn:http-mthom-github-io:-blog-2016-10-10-poor-man-s-dynamic-dispatch-with-types-in-shen</guid>
+   <pubDate>Mon, 10 Oct 2016 14:27:38 UT</pubDate>
+   <description>&lt;html&gt;
+&lt;p&gt;&lt;em&gt;DISCLAIMER: In this post I explore an interesting but ill-advised use of Shen&amp;rsquo;s type system. Nothing in it should be taken as an indication of how to write good Shen.&lt;/em&gt;&lt;/p&gt;
+&lt;!-- more--&gt;
+
+&lt;p&gt;Historically, a lauded feature of Lisp is its extensive support for runtime introspection. Common Lisp makes it easy to tease out properties of programs as first class values, which is especially useful when customizing the behavior of the language to a particular problem domain. The venerable Common Lisp Object System (CLOS) is reknown in PL circles for its flexibility and dynamism &amp;mdash; its first implementation was written entirely in the core Common Lisp language.&lt;/p&gt;
+
+&lt;p&gt;From the perspective of a language designer, the downside of extensive introspection support is that makes it much harder to introduce ways of expressing constraints on code into the language. In this post I want to show how we can enable a fast, type-driven, mostly reliable single dispatch mechanism in Shen.&lt;/p&gt;
+
+&lt;h2 id="property-lists-and-effectful-programming-in-the-type-checker"&gt;Property lists and effectful programming in the type checker&lt;/h2&gt;
+
+&lt;p&gt;One feature Shen exhibits from its Lisp heritage is the property list, or plist. A plist is a way of annotating data onto a symbol, which can be associatively read and modified at that symbol, stored as a list of key/value pairs. In chapter 24 of &lt;a href="http://www.gigamonkeys.com/book/"&gt;Practical Common Lisp&lt;/a&gt;, Seibel uses plists to control the expansion of a family of macros at compile time. Shen&amp;rsquo;s property lists can be annotated onto any Shen value, and are documented &lt;a href="http://www.shenlanguage.org/learn-shen/property_lists.html"&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;We&amp;rsquo;ll begin by providing a typed version of Common Lisp&amp;rsquo;s &lt;code&gt;type-of&lt;/code&gt; function. To do this we&amp;rsquo;ll exploit the fact that we have at our disposal most (all?) of the Shen language from within the sequent rules written in any &lt;code&gt;datatype&lt;/code&gt; clause.&lt;/p&gt;
+
+&lt;p&gt;Since Shen is a Lisp, we also have the home advantage of homoiconicity. This means we can intercept any datum put out by the type checker &amp;mdash; itself a Shen value &amp;mdash; and do whatever we like with it in the course of checking that a value inhabits a type.&lt;/p&gt;
+
+&lt;p&gt;So, while verifying that a value &lt;code&gt;X&lt;/code&gt; inhabits a type &lt;code&gt;A&lt;/code&gt;, we&amp;rsquo;ll annotate &lt;code&gt;X&lt;/code&gt;&amp;rsquo;s property list with a representation of its type &lt;code&gt;A&lt;/code&gt; at the key type-rep. We&amp;rsquo;ll reference the value of type-rep when we add dynamic dispatch, but first we need to decide on a mode of representation. For type-reps, we&amp;rsquo;ll use Shen strings.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;(define string-concat
+  []  -&amp;gt; ""
+  [S] -&amp;gt; S
+  [S | Ss] -&amp;gt; (@s S " " (string-concat Ss)))
+
+(define type-&amp;gt;string  
+  Xs  -&amp;gt; "()" where (empty? Xs)
+  Xs  -&amp;gt; (@s "(" (string-concat (map type-&amp;gt;string Xs)) ")") where (cons? Xs)
+  Str -&amp;gt; (make-string "~A" Str))&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A brief overview of the predicates in the &lt;code&gt;where&lt;/code&gt; clauses: &lt;code&gt;empty?&lt;/code&gt; checks for an empty list, &lt;code&gt;cons?&lt;/code&gt; for a non-empty list. &lt;code&gt;make-string&lt;/code&gt; writes a value to a string using the Fortran formatting notation for strings.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;string-concat&lt;/code&gt; is a simple utility function for concatenating a list of strings together. Adding types, these functions become&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;(define string-concat
+  { (list string) --&amp;gt; string }
+  []  -&amp;gt; ""
+  [S] -&amp;gt; S
+  [S | Ss] -&amp;gt; (@s S " " (string-concat Ss)))
+
+(define type-&amp;gt;string
+  { A --&amp;gt; string }	
+  Xs  -&amp;gt; "()" where (empty? Xs)
+  Xs  -&amp;gt; (@s "(" (string-concat (map type-&amp;gt;string Xs)) ")") where (cons? Xs)
+  Str -&amp;gt; (make-string "~A" Str))&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To support the polymorphism of &lt;code&gt;type-&amp;gt;string&lt;/code&gt;, we add a verified type on &lt;code&gt;cons?&lt;/code&gt;. For any &lt;code&gt;where Property&lt;/code&gt; clause, Shen automatically introduces the axiom &lt;code&gt;Property : verified&lt;/code&gt; into the type theory, which a Shen programmer can exploit to type values on a case-driven basis.&lt;/p&gt;
+
+&lt;p&gt;Having verified that &lt;code&gt;(cons? Xs)&lt;/code&gt; returns true, we want the type checker to deduce that &lt;code&gt;Xs&lt;/code&gt; is a non-empty homogeneous list of values with type &lt;code&gt;A&lt;/code&gt;. This is done in the rule&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;(datatype verified-types-for-cons
+  _______________________________________
+  (cons? Xs) : verified &amp;gt;&amp;gt; Xs : (list A);)&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The type theory for type-reps is as follows.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;(datatype type-reps
+  ______________________________________________
+  X : (type-rep A) &amp;gt;&amp;gt; (get X type-rep) : string;
+
+  let Tag (put (eval X) type-rep (type-&amp;gt;string A))
+  ________________________________________________
+  (tag-value-with-rep X A);
+
+  X : A; (tag-value-with-rep X A);
+  ________________________________
+  X : (mode (type-rep A) -);)&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We&amp;rsquo;ll run down the rules from the top. We consider that any value &lt;code&gt;X&lt;/code&gt; of type &lt;code&gt;A&lt;/code&gt; represents the type of &lt;code&gt;A&lt;/code&gt;; the type &lt;code&gt;(type-rep A)&lt;/code&gt; is nothing other than the type &lt;code&gt;A&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The first rule says that if the value &lt;code&gt;X&lt;/code&gt; represents &lt;code&gt;A&lt;/code&gt;, it is annotated with the representation of &lt;code&gt;A&lt;/code&gt; at the key type-rep in its plist, a string.&lt;/p&gt;
+
+&lt;p&gt;The second rule does the work of annotating the plist with the string representation of &lt;code&gt;A&lt;/code&gt; at the key type-rep. Shen values get mangled slightly in the type checker, but the mangling can be overcome using the &lt;code&gt;eval&lt;/code&gt; function.&lt;/p&gt;
+
+&lt;p&gt;The third and final rule checks that &lt;code&gt;X&lt;/code&gt; is of type &lt;code&gt;A&lt;/code&gt; before firing the clause that annotates the plist of &lt;code&gt;X&lt;/code&gt; appropriately. The &lt;code&gt;mode
+... -&lt;/code&gt; wrapper is there to prevent the type checker from entering an infinite loop upon encountering some of the more complicated (ie. polymorphic) types native to Shen.&lt;/p&gt;
+
+&lt;p&gt;We are finally ready to give the definition of &lt;code&gt;type-of&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;(define type-of
+  { (type-rep A) --&amp;gt; string }
+  X -&amp;gt; (get X type-rep))&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And that&amp;rsquo;s it. All the heavy lifting is done in the type checker. We can test the operation of &lt;code&gt;type-of&lt;/code&gt; on values of various types.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;(36+) (type-of 3)
+"number" : string
+
+(37+) (type-of "a string")
+"string" : string
+
+(38+) (type-of false)
+"boolean" : string
+
+(39+) (type-of (@p 3 false [1 2 3] (@v (@v symbols are present &amp;lt;&amp;gt;) &amp;lt;&amp;gt;)))
+"(number * (boolean * ((list number) * (vector (vector symbol)))))" : string
+
+(40+) (type-of str)
+"(Var17 --&amp;gt; string)" : string&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The function &lt;code&gt;str&lt;/code&gt; has the polymorphic type &lt;code&gt;(A --&amp;gt; string)&lt;/code&gt;, but here a skolemized variable &lt;code&gt;Var17&lt;/code&gt; is leaked out of the type checker. Obviously this poses a serious caveat to dynamic dispatch on polymorphic types. We should be more careful in defining &lt;code&gt;type-&amp;gt;string&lt;/code&gt; after deciding on a format for polymorphic type representation. This seems a job for the (Shen and human) reader and Shen Prolog.&lt;/p&gt;
+
+&lt;h2 id="generic-type-verification"&gt;Generic type verification&lt;/h2&gt;
+
+&lt;p&gt;What we&amp;rsquo;ve developed is a semi-elegant way of implementing generic verified types. Remember that we had to introduce a special rule for verifying homogeneous lists in &lt;code&gt;where&lt;/code&gt; clauses. If we have to do the same for every type we might want to verify in the future, we will quickly overburden the type checker with many ad-hoc rules.&lt;/p&gt;
+
+&lt;p&gt;Fortunately, we can leverage &lt;code&gt;type-of&lt;/code&gt; to avoid that, at least when dealing with non-polymorphic types.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;(define has-type?
+  { (type-rep A) --&amp;gt; string --&amp;gt; boolean }
+  X Type -&amp;gt; (= (type-of X) Type))
+
+(datatype generic-verification  
+  ______________________________________
+  (has-type? X Str) : verified &amp;gt;&amp;gt; X : A;)&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;has-type?&lt;/code&gt; checks that &lt;code&gt;X&lt;/code&gt; has the type described in the string, by extracting its type representation from &lt;code&gt;type-of&lt;/code&gt;. The rule in &lt;code&gt;generic-verification&lt;/code&gt; proves that &lt;code&gt;X&lt;/code&gt; has type &lt;code&gt;A&lt;/code&gt; by appealing to the truth of of &lt;code&gt;has-type?&lt;/code&gt; on &lt;code&gt;X&lt;/code&gt; and its purported representation &lt;code&gt;Str&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now we have type verification &amp;ldquo;for free&amp;rdquo;, at least on arbitrary concrete types, as demonstrated in the stupid and useless function &lt;code&gt;arbitrary-messages&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;(define arbitrary-messages
+  { (type-rep A) --&amp;gt; string }
+  X -&amp;gt; (let Y (+ X X) (str Y)) where (has-type? X "number")
+  X -&amp;gt; (let Y (@s X X X) Y) where (has-type? X "string")
+  X -&amp;gt; (@s "passed a " (type-of X)))&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Note that &lt;code&gt;X&lt;/code&gt; is being typed as a number, as a string, etc. in the each of the adjoining clauses, and is treated accordingly. What we&amp;rsquo;ve created is essentially a limited but type safe version of Common Lisp&amp;rsquo;s &lt;code&gt;typecase&lt;/code&gt; macro, without delving into macrology.&lt;/p&gt;
+
+&lt;h1 id="opportunities-and-shortcomings"&gt;Opportunities and Shortcomings&lt;/h1&gt;
+
+&lt;p&gt;We&amp;rsquo;ve mentioned the difficulty in dealing with polymorphic types, but another major shortcoming is that Shen&amp;rsquo;s type system is simply too powerful for this mechanism to work well across all applications. Shen places no restrictions on the number of types or the relation among types that any value may belong to.&lt;/p&gt;
+
+&lt;p&gt;On the bright side, a technique like this could serve as the basis for some form of automatic type-driven single dispatch; think Haskell&amp;rsquo;s typeclasses.&lt;/p&gt;&lt;/html&gt;</description></item></channel></rss>

@@ -1,2 +1,3 @@
 http://mthom.github.io/blog/2015/06/08/shen-kata-1-type-safe-reference-cells/
+http://mthom.github.io/blog/2016/10/10/poor-man-s-dynamic-dispatch-with-types-in-shen/
 http://mthom.github.io/About.html
