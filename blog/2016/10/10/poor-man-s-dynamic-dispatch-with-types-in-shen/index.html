@@ -143,7 +143,7 @@
 
 <p>To support the polymorphism of <code>type-&gt;string</code>, we add a verified type on <code>cons?</code>. For any <code>where Property</code> clause, Shen automatically introduces the axiom <code>Property : verified</code> into the type theory, which a Shen programmer can exploit to type values on a case-driven basis.</p>
 
-<p>Having verified that <code>(cons? Xs)</code> returns true, we want the type checker to treat <code>Xs</code> as a non-empty, potentially non-homogeneous list of values with type <code>A</code>. This is done in the rule</p>
+<p>Having verified that <code>(cons? Xs)</code> returns true, we want the type checker to view <code>Xs</code> as a non-empty, potentially non-homogeneous list of values. Since <code>type-&gt;string</code> is polymorphic, the output of a map of <code>type-&gt;string</code> over <code>Xs</code> will be a list of strings, regardless of the types of values in the list. This is done in the rule</p>
 
 <pre><code>(datatype verified-types-for-cons
   _______________________________________________________________
