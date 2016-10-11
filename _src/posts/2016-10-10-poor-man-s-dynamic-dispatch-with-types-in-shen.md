@@ -89,8 +89,10 @@ introduces the axiom `Property : verified` into the type theory, which
 a Shen programmer can exploit to type values on a case-driven basis.
 
 Having verified that `(cons? Xs)` returns true, we want the type
-checker to treat `Xs` as a non-empty, potentially non-homogeneous list
-of values with type `A`. This is done in the rule
+checker to view `Xs` as a non-empty, potentially non-homogeneous list
+of values. Since `type->string` is polymorphic, the output of a map of
+`type->string` over `Xs` will be a list of strings, regardless of the
+types of values in the list. This is done in the rule
 
 ```
 (datatype verified-types-for-cons
@@ -124,7 +126,7 @@ string.
 
 The second rule does the work of annotating the plist with the string
 representation of `A` at the key type-rep. Shen values get mangled
-slightly in the type checker, but the mangling can be overcome using
+slightly in the type checker, but the mangling can be undone using
 the `eval` function.
 
 The third and final rule checks that `X` is of type `A` before firing

@@ -83,7 +83,7 @@
 
 &lt;p&gt;The first rule says that if the value &lt;code&gt;X&lt;/code&gt; represents &lt;code&gt;A&lt;/code&gt;, it is annotated with the representation of &lt;code&gt;A&lt;/code&gt; at the key type-rep in its plist, a string.&lt;/p&gt;
 
-&lt;p&gt;The second rule does the work of annotating the plist with the string representation of &lt;code&gt;A&lt;/code&gt; at the key type-rep. Shen values get mangled slightly in the type checker, but the mangling can be overcome using the &lt;code&gt;eval&lt;/code&gt; function.&lt;/p&gt;
+&lt;p&gt;The second rule does the work of annotating the plist with the string representation of &lt;code&gt;A&lt;/code&gt; at the key type-rep. Shen values get mangled slightly in the type checker, but the mangling can be undone using the &lt;code&gt;eval&lt;/code&gt; function.&lt;/p&gt;
 
 &lt;p&gt;The third and final rule checks that &lt;code&gt;X&lt;/code&gt; is of type &lt;code&gt;A&lt;/code&gt; before firing the clause that annotates the plist of &lt;code&gt;X&lt;/code&gt; appropriately. The &lt;code&gt;mode
 ... -&lt;/code&gt; wrapper is there to prevent the type checker from entering an infinite loop upon encountering some of the more complicated (ie. polymorphic) types native to Shen.&lt;/p&gt;

@@ -167,7 +167,7 @@
 
 <p>The first rule says that if the value <code>X</code> represents <code>A</code>, it is annotated with the representation of <code>A</code> at the key type-rep in its plist, a string.</p>
 
-<p>The second rule does the work of annotating the plist with the string representation of <code>A</code> at the key type-rep. Shen values get mangled slightly in the type checker, but the mangling can be overcome using the <code>eval</code> function.</p>
+<p>The second rule does the work of annotating the plist with the string representation of <code>A</code> at the key type-rep. Shen values get mangled slightly in the type checker, but the mangling can be undone using the <code>eval</code> function.</p>
 
 <p>The third and final rule checks that <code>X</code> is of type <code>A</code> before firing the clause that annotates the plist of <code>X</code> appropriately. The <code>mode
 ... -</code> wrapper is there to prevent the type checker from entering an infinite loop upon encountering some of the more complicated (ie. polymorphic) types native to Shen.</p>
