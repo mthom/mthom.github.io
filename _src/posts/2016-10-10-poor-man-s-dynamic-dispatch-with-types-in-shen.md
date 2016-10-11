@@ -89,13 +89,13 @@ introduces the axiom `Property : verified` into the type theory, which
 a Shen programmer can exploit to type values on a case-driven basis.
 
 Having verified that `(cons? Xs)` returns true, we want the type
-checker to deduce that `Xs` is a non-empty homogeneous list of values
-with type `A`. This is done in the rule
+checker to treat `Xs` as a non-empty, potentially non-homogeneous list
+of values with type `A`. This is done in the rule
 
 ```
 (datatype verified-types-for-cons
-  _______________________________________
-  (cons? Xs) : verified >> Xs : (list A);)
+  _______________________________________________________________
+  (cons? Xs) : verified >> (map type->string Xs) : (list string);)
 ```
 
 The type theory for type-reps is as follows.

@@ -58,11 +58,11 @@
 
 &lt;p&gt;To support the polymorphism of &lt;code&gt;type-&amp;gt;string&lt;/code&gt;, we add a verified type on &lt;code&gt;cons?&lt;/code&gt;. For any &lt;code&gt;where Property&lt;/code&gt; clause, Shen automatically introduces the axiom &lt;code&gt;Property : verified&lt;/code&gt; into the type theory, which a Shen programmer can exploit to type values on a case-driven basis.&lt;/p&gt;
 
-&lt;p&gt;Having verified that &lt;code&gt;(cons? Xs)&lt;/code&gt; returns true, we want the type checker to deduce that &lt;code&gt;Xs&lt;/code&gt; is a non-empty homogeneous list of values with type &lt;code&gt;A&lt;/code&gt;. This is done in the rule&lt;/p&gt;
+&lt;p&gt;Having verified that &lt;code&gt;(cons? Xs)&lt;/code&gt; returns true, we want the type checker to treat &lt;code&gt;Xs&lt;/code&gt; as a non-empty, potentially non-homogeneous list of values with type &lt;code&gt;A&lt;/code&gt;. This is done in the rule&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;(datatype verified-types-for-cons
-  _______________________________________
-  (cons? Xs) : verified &amp;gt;&amp;gt; Xs : (list A);)&lt;/code&gt;&lt;/pre&gt;
+  _______________________________________________________________
+  (cons? Xs) : verified &amp;gt;&amp;gt; (map type-&amp;gt;string Xs) : (list string);)&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;The type theory for type-reps is as follows.&lt;/p&gt;
 
