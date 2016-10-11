@@ -101,7 +101,7 @@
 <p><em>DISCLAIMER: In this post I explore an interesting but ill-advised use of Shen&rsquo;s type system. Nothing in it should be taken as an indication of how to write good Shen.</em></p>
 <!-- more-->
 
-<p>Historically, a lauded feature of Lisp is its extensive support for runtime introspection. Common Lisp makes it easy to tease out properties of programs as first class values, which is especially useful when customizing the behavior of the language to a particular problem domain. The venerable Common Lisp Object System (CLOS) is reknown in PL circles for its flexibility and dynamism &mdash; its first implementation was written entirely in the core Common Lisp language.</p>
+<p>Historically, a lauded feature of Lisp is its extensive support for runtime introspection. Common Lisp makes it easy to tease out properties of programs as first class values, which is especially useful when customizing the behavior of the language to a particular problem domain. The venerable Common Lisp Object System (CLOS) is renown in PL circles for its flexibility and dynamism &mdash; its first implementation was written entirely in the core Common Lisp language.</p>
 
 <p>From the perspective of a language designer, the downside of extensive introspection support is that makes it much harder to introduce ways of expressing constraints on code into the language. In this post I want to show how we can enable a fast, type-driven, mostly reliable single dispatch mechanism in Shen.</p>
 
@@ -199,7 +199,7 @@
 
 <h2 id="generic-type-verification">Generic type verification</h2>
 
-<p>What we&rsquo;ve developed is a semi-elegant way of implementing generic verified types. Remember that we had to introduce a special rule for verifying homogeneous lists in <code>where</code> clauses. If we have to do the same for every type we might want to verify in the future, we will quickly overburden the type checker with many ad-hoc rules.</p>
+<p>What we&rsquo;ve developed is a semi-elegant way of implementing generic verified types. Remember that we had to introduce a special rule for verifying homogeneous lists in <code>where</code> clauses. If we have to do the same for every type we might want to verify in the future, we will quickly overburden the type checker with many ad hoc rules.</p>
 
 <p>Fortunately, we can leverage <code>type-of</code> to avoid that, at least when dealing with non-polymorphic types.</p>
 
@@ -222,11 +222,11 @@
   X -&gt; (let Y (@s X X X) Y) where (has-type? X "string")
   X -&gt; (@s "passed a " (type-of X)))</code></pre>
 
-<p>Note that <code>X</code> is being typed as a number, as a string, etc. in the each of the adjoining clauses, and is treated accordingly. What we&rsquo;ve created is essentially a limited but type safe version of Common Lisp&rsquo;s <code>typecase</code> macro, without delving into macrology.</p>
+<p>Note that <code>X</code> is being typed as a number, as a string, etc. in each of the adjoining clauses, and is treated accordingly. What we&rsquo;ve created is essentially a limited but type safe version of Common Lisp&rsquo;s <code>typecase</code> macro, without delving into macrology.</p>
 
 <h1 id="opportunities-and-shortcomings">Opportunities and Shortcomings</h1>
 
-<p>We&rsquo;ve mentioned the difficulty in dealing with polymorphic types, but another major shortcoming is that Shen&rsquo;s type system is simply too powerful for this mechanism to work well across all applications. Shen places no restrictions on the number of types or the relation among types that any value may belong to.</p>
+<p>We&rsquo;ve mentioned the difficulty in dealing with polymorphic types, but another major shortcoming is that Shen&rsquo;s type system is simply too powerful for this mechanism to work well across all applications. Shen places no restrictions on the number of types or the relations among types that any value may belong to.</p>
 
 <p>On the bright side, a technique like this could serve as the basis for some form of automatic type-driven single dispatch; think Haskell&rsquo;s typeclasses.</p>
 

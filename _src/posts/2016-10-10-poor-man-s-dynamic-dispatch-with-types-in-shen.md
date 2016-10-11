@@ -13,7 +13,7 @@ runtime introspection. Common Lisp makes it easy to tease out
 properties of programs as first class values, which is especially
 useful when customizing the behavior of the language to a particular
 problem domain. The venerable Common Lisp Object System (CLOS) is
-reknown in PL circles for its flexibility and dynamism -- its first
+renown in PL circles for its flexibility and dynamism -- its first
 implementation was written entirely in the core Common Lisp language.
 
 From the perspective of a language designer, the downside of extensive
@@ -175,7 +175,7 @@ What we've developed is a semi-elegant way of implementing generic
 verified types. Remember that we had to introduce a special rule for
 verifying homogeneous lists in `where` clauses. If we have to do the
 same for every type we might want to verify in the future, we will
-quickly overburden the type checker with many ad-hoc rules.
+quickly overburden the type checker with many ad hoc rules.
 
 Fortunately, we can leverage `type-of` to avoid that, at least when
 dealing with non-polymorphic types.
@@ -209,17 +209,17 @@ concrete types, as demonstrated in the stupid and useless function
   X -> (@s "passed a " (type-of X)))
 ```
 
-Note that `X` is being typed as a number, as a string, etc. in the
-each of the adjoining clauses, and is treated accordingly. What we've
-created is essentially a limited but type safe version of Common
-Lisp's `typecase` macro, without delving into macrology.
+Note that `X` is being typed as a number, as a string, etc. in each of
+the adjoining clauses, and is treated accordingly. What we've created
+is essentially a limited but type safe version of Common Lisp's
+`typecase` macro, without delving into macrology.
 
 # Opportunities and Shortcomings
 
 We've mentioned the difficulty in dealing with polymorphic types, but
 another major shortcoming is that Shen's type system is simply too
 powerful for this mechanism to work well across all applications. Shen
-places no restrictions on the number of types or the relation among
+places no restrictions on the number of types or the relations among
 types that any value may belong to.
 
 On the bright side, a technique like this could serve as the basis for
