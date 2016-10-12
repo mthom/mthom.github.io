@@ -32,38 +32,16 @@
 &lt;p&gt;So, while verifying that a value &lt;code&gt;X&lt;/code&gt; inhabits a type &lt;code&gt;A&lt;/code&gt;, we&amp;rsquo;ll annotate &lt;code&gt;X&lt;/code&gt;&amp;rsquo;s property list with a representation of its type &lt;code&gt;A&lt;/code&gt; at the key type-rep. We&amp;rsquo;ll reference the value of type-rep when we add dynamic dispatch, but first we need to decide on a mode of representation. For type-reps, we&amp;rsquo;ll use Shen strings.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;(define string-concat
-  []  -&amp;gt; ""
-  [S] -&amp;gt; S
-  [S | Ss] -&amp;gt; (@s S " " (string-concat Ss)))
-
-(define type-&amp;gt;string  
-  Xs  -&amp;gt; "()" where (empty? Xs)
-  Xs  -&amp;gt; (@s "(" (string-concat (map type-&amp;gt;string Xs)) ")") where (cons? Xs)
-  Str -&amp;gt; (make-string "~A" Str))&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;A brief overview of the predicates in the &lt;code&gt;where&lt;/code&gt; clauses: &lt;code&gt;empty?&lt;/code&gt; checks for an empty list, &lt;code&gt;cons?&lt;/code&gt; for a non-empty list. &lt;code&gt;make-string&lt;/code&gt; writes a value to a string using the Fortran formatting notation for strings.&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;string-concat&lt;/code&gt; is a simple utility function for concatenating a list of strings together. Adding types, these functions become&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;(define string-concat
   { (list string) --&amp;gt; string }
   []  -&amp;gt; ""
   [S] -&amp;gt; S
   [S | Ss] -&amp;gt; (@s S " " (string-concat Ss)))
 
 (define type-&amp;gt;string
-  { A --&amp;gt; string }	
-  Xs  -&amp;gt; "()" where (empty? Xs)
-  Xs  -&amp;gt; (@s "(" (string-concat (map type-&amp;gt;string Xs)) ")") where (cons? Xs)
+  { A --&amp;gt; string }  
   Str -&amp;gt; (make-string "~A" Str))&lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;To support the polymorphism of &lt;code&gt;type-&amp;gt;string&lt;/code&gt;, we add a verified type on &lt;code&gt;cons?&lt;/code&gt;. For any &lt;code&gt;where Property&lt;/code&gt; clause, Shen automatically introduces the axiom &lt;code&gt;Property : verified&lt;/code&gt; into the type theory, which a Shen programmer can exploit to type values on a case-driven basis.&lt;/p&gt;
-
-&lt;p&gt;Having verified that &lt;code&gt;(cons? Xs)&lt;/code&gt; returns true, we want the type checker to view &lt;code&gt;Xs&lt;/code&gt; as a non-empty, potentially non-homogeneous list of values. Since &lt;code&gt;type-&amp;gt;string&lt;/code&gt; is polymorphic, the output of a map of &lt;code&gt;type-&amp;gt;string&lt;/code&gt; over &lt;code&gt;Xs&lt;/code&gt; will be a list of strings, regardless of the types of values in the list. This is done in the rule&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;(datatype verified-types-for-cons
-  _______________________________________________________________
-  (cons? Xs) : verified &amp;gt;&amp;gt; (map type-&amp;gt;string Xs) : (list string);)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;make-string&lt;/code&gt; writes a value to a string using the Fortran formatting notation for strings. &lt;code&gt;string-concat&lt;/code&gt; is a simple utility function for concatenating a list of strings together.&lt;/p&gt;
 
 &lt;p&gt;The type theory for type-reps is as follows.&lt;/p&gt;
 
@@ -115,9 +93,9 @@
 
 &lt;h2 id="generic-type-verification"&gt;Generic type verification&lt;/h2&gt;
 
-&lt;p&gt;What we&amp;rsquo;ve developed is a semi-elegant way of implementing generic verified types. Remember that we had to introduce a special rule for verifying homogeneous lists in &lt;code&gt;where&lt;/code&gt; clauses. If we have to do the same for every type we might want to verify in the future, we will quickly overburden the type checker with many ad hoc rules.&lt;/p&gt;
+&lt;p&gt;What we&amp;rsquo;ve developed is a semi-elegant way of implementing generic verified types. In the definition of a Shen function, the expression making up a &lt;code&gt;where&lt;/code&gt; clause is automatically given the type &amp;rsquo;verified&amp;rsquo;, something a Shen programmer can exploit to inject more information into the type theory on a case-driven basis.&lt;/p&gt;
 
-&lt;p&gt;Fortunately, we can leverage &lt;code&gt;type-of&lt;/code&gt; to avoid that, at least when dealing with non-polymorphic types.&lt;/p&gt;
+&lt;p&gt;If we lean heavily on the use of verified types, we may soon find we&amp;rsquo;ve overburdened the type checker with many ad hoc rules. Fortunately, we can leverage &lt;code&gt;type-of&lt;/code&gt; to avoid that, at least when dealing with non-polymorphic types.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;(define has-type?
   { (type-rep A) --&amp;gt; string --&amp;gt; boolean }

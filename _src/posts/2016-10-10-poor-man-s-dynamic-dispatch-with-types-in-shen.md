@@ -51,54 +51,19 @@ representation. For type-reps, we'll use Shen strings.
 
 ```
 (define string-concat
-  []  -> ""
-  [S] -> S
-  [S | Ss] -> (@s S " " (string-concat Ss)))
-
-(define type->string  
-  Xs  -> "()" where (empty? Xs)
-  Xs  -> (@s "(" (string-concat (map type->string Xs)) ")") where (cons? Xs)
-  Str -> (make-string "~A" Str))
-```
-
-A brief overview of the predicates in the `where` clauses: `empty?`
-checks for an empty list, `cons?` for a non-empty list. `make-string`
-writes a value to a string using the Fortran formatting notation for
-strings.
-
-`string-concat` is a simple utility function for concatenating a list
-of strings together. Adding types, these functions become
-
-```
-(define string-concat
   { (list string) --> string }
   []  -> ""
   [S] -> S
   [S | Ss] -> (@s S " " (string-concat Ss)))
 
 (define type->string
-  { A --> string }	
-  Xs  -> "()" where (empty? Xs)
-  Xs  -> (@s "(" (string-concat (map type->string Xs)) ")") where (cons? Xs)
+  { A --> string }  
   Str -> (make-string "~A" Str))
 ```
 
-To support the polymorphism of `type->string`, we add a verified type
-on `cons?`. For any `where Property` clause, Shen automatically
-introduces the axiom `Property : verified` into the type theory, which
-a Shen programmer can exploit to type values on a case-driven basis.
-
-Having verified that `(cons? Xs)` returns true, we want the type
-checker to view `Xs` as a non-empty, potentially non-homogeneous list
-of values. Since `type->string` is polymorphic, the output of a map of
-`type->string` over `Xs` will be a list of strings, regardless of the
-types of values in the list. This is done in the rule
-
-```
-(datatype verified-types-for-cons
-  _______________________________________________________________
-  (cons? Xs) : verified >> (map type->string Xs) : (list string);)
-```
+`make-string` writes a value to a string using the Fortran formatting
+notation for strings. `string-concat` is a simple utility function for
+concatenating a list of strings together.
 
 The type theory for type-reps is as follows.
 
@@ -174,13 +139,15 @@ Shen Prolog.
 ## Generic type verification
 
 What we've developed is a semi-elegant way of implementing generic
-verified types. Remember that we had to introduce a special rule for
-verifying homogeneous lists in `where` clauses. If we have to do the
-same for every type we might want to verify in the future, we will
-quickly overburden the type checker with many ad hoc rules.
+verified types. In the definition of a Shen function, the expression
+making up a `where` clause is automatically given the type 'verified',
+something a Shen programmer can exploit to inject more information
+into the type theory on a case-driven basis.
 
-Fortunately, we can leverage `type-of` to avoid that, at least when
-dealing with non-polymorphic types.
+If we lean heavily on the use of verified types, we may soon find
+we've overburdened the type checker with many ad hoc
+rules. Fortunately, we can leverage `type-of` to avoid that, at least
+when dealing with non-polymorphic types.
 
 ```
 (define has-type?

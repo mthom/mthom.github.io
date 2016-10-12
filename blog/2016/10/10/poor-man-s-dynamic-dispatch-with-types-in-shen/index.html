@@ -116,38 +116,16 @@
 <p>So, while verifying that a value <code>X</code> inhabits a type <code>A</code>, we&rsquo;ll annotate <code>X</code>&rsquo;s property list with a representation of its type <code>A</code> at the key type-rep. We&rsquo;ll reference the value of type-rep when we add dynamic dispatch, but first we need to decide on a mode of representation. For type-reps, we&rsquo;ll use Shen strings.</p>
 
 <pre><code>(define string-concat
-  []  -&gt; ""
-  [S] -&gt; S
-  [S | Ss] -&gt; (@s S " " (string-concat Ss)))
-
-(define type-&gt;string  
-  Xs  -&gt; "()" where (empty? Xs)
-  Xs  -&gt; (@s "(" (string-concat (map type-&gt;string Xs)) ")") where (cons? Xs)
-  Str -&gt; (make-string "~A" Str))</code></pre>
-
-<p>A brief overview of the predicates in the <code>where</code> clauses: <code>empty?</code> checks for an empty list, <code>cons?</code> for a non-empty list. <code>make-string</code> writes a value to a string using the Fortran formatting notation for strings.</p>
-
-<p><code>string-concat</code> is a simple utility function for concatenating a list of strings together. Adding types, these functions become</p>
-
-<pre><code>(define string-concat
   { (list string) --&gt; string }
   []  -&gt; ""
   [S] -&gt; S
   [S | Ss] -&gt; (@s S " " (string-concat Ss)))
 
 (define type-&gt;string
-  { A --&gt; string }	
-  Xs  -&gt; "()" where (empty? Xs)
-  Xs  -&gt; (@s "(" (string-concat (map type-&gt;string Xs)) ")") where (cons? Xs)
+  { A --&gt; string }  
   Str -&gt; (make-string "~A" Str))</code></pre>
 
-<p>To support the polymorphism of <code>type-&gt;string</code>, we add a verified type on <code>cons?</code>. For any <code>where Property</code> clause, Shen automatically introduces the axiom <code>Property : verified</code> into the type theory, which a Shen programmer can exploit to type values on a case-driven basis.</p>
-
-<p>Having verified that <code>(cons? Xs)</code> returns true, we want the type checker to view <code>Xs</code> as a non-empty, potentially non-homogeneous list of values. Since <code>type-&gt;string</code> is polymorphic, the output of a map of <code>type-&gt;string</code> over <code>Xs</code> will be a list of strings, regardless of the types of values in the list. This is done in the rule</p>
-
-<pre><code>(datatype verified-types-for-cons
-  _______________________________________________________________
-  (cons? Xs) : verified &gt;&gt; (map type-&gt;string Xs) : (list string);)</code></pre>
+<p><code>make-string</code> writes a value to a string using the Fortran formatting notation for strings. <code>string-concat</code> is a simple utility function for concatenating a list of strings together.</p>
 
 <p>The type theory for type-reps is as follows.</p>
 
@@ -199,9 +177,9 @@
 
 <h2 id="generic-type-verification">Generic type verification</h2>
 
-<p>What we&rsquo;ve developed is a semi-elegant way of implementing generic verified types. Remember that we had to introduce a special rule for verifying homogeneous lists in <code>where</code> clauses. If we have to do the same for every type we might want to verify in the future, we will quickly overburden the type checker with many ad hoc rules.</p>
+<p>What we&rsquo;ve developed is a semi-elegant way of implementing generic verified types. In the definition of a Shen function, the expression making up a <code>where</code> clause is automatically given the type &rsquo;verified&rsquo;, something a Shen programmer can exploit to inject more information into the type theory on a case-driven basis.</p>
 
-<p>Fortunately, we can leverage <code>type-of</code> to avoid that, at least when dealing with non-polymorphic types.</p>
+<p>If we lean heavily on the use of verified types, we may soon find we&rsquo;ve overburdened the type checker with many ad hoc rules. Fortunately, we can leverage <code>type-of</code> to avoid that, at least when dealing with non-polymorphic types.</p>
 
 <pre><code>(define has-type?
   { (type-rep A) --&gt; string --&gt; boolean }
