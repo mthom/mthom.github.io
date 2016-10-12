@@ -31,17 +31,11 @@
 
 &lt;p&gt;So, while verifying that a value &lt;code&gt;X&lt;/code&gt; inhabits a type &lt;code&gt;A&lt;/code&gt;, we&amp;rsquo;ll annotate &lt;code&gt;X&lt;/code&gt;&amp;rsquo;s property list with a representation of its type &lt;code&gt;A&lt;/code&gt; at the key type-rep. We&amp;rsquo;ll reference the value of type-rep when we add dynamic dispatch, but first we need to decide on a mode of representation. For type-reps, we&amp;rsquo;ll use Shen strings.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;(define string-concat
-  { (list string) --&amp;gt; string }
-  []  -&amp;gt; ""
-  [S] -&amp;gt; S
-  [S | Ss] -&amp;gt; (@s S " " (string-concat Ss)))
-
-(define type-&amp;gt;string
+&lt;pre&gt;&lt;code&gt;(define type-&amp;gt;string
   { A --&amp;gt; string }  
   Str -&amp;gt; (make-string "~A" Str))&lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;code&gt;make-string&lt;/code&gt; writes a value to a string using the Fortran formatting notation for strings. &lt;code&gt;string-concat&lt;/code&gt; is a simple utility function for concatenating a list of strings together.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;make-string&lt;/code&gt; writes a value to a string using the Fortran formatting notation for strings.&lt;/p&gt;
 
 &lt;p&gt;The type theory for type-reps is as follows.&lt;/p&gt;
 
@@ -123,6 +117,8 @@
 &lt;p&gt;We&amp;rsquo;ve mentioned the difficulty in dealing with polymorphic types, but another major shortcoming is that Shen&amp;rsquo;s type system is simply too powerful for this mechanism to work well across all applications. Shen places no restrictions on the number of types or the relations among types that any value may belong to.&lt;/p&gt;
 
 &lt;p&gt;On the bright side, a technique like this could serve as the basis for some form of automatic type-driven single dispatch; think Haskell&amp;rsquo;s typeclasses.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;EDIT: Thanks to Mark Tarver for his comments on the code and corrections.&lt;/em&gt;&lt;/p&gt;
 
 &lt;h1 id="source-code"&gt;Source code&lt;/h1&gt;
 

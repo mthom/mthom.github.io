@@ -115,17 +115,11 @@
 
 <p>So, while verifying that a value <code>X</code> inhabits a type <code>A</code>, we&rsquo;ll annotate <code>X</code>&rsquo;s property list with a representation of its type <code>A</code> at the key type-rep. We&rsquo;ll reference the value of type-rep when we add dynamic dispatch, but first we need to decide on a mode of representation. For type-reps, we&rsquo;ll use Shen strings.</p>
 
-<pre><code>(define string-concat
-  { (list string) --&gt; string }
-  []  -&gt; ""
-  [S] -&gt; S
-  [S | Ss] -&gt; (@s S " " (string-concat Ss)))
-
-(define type-&gt;string
+<pre><code>(define type-&gt;string
   { A --&gt; string }  
   Str -&gt; (make-string "~A" Str))</code></pre>
 
-<p><code>make-string</code> writes a value to a string using the Fortran formatting notation for strings. <code>string-concat</code> is a simple utility function for concatenating a list of strings together.</p>
+<p><code>make-string</code> writes a value to a string using the Fortran formatting notation for strings.</p>
 
 <p>The type theory for type-reps is as follows.</p>
 
@@ -207,6 +201,8 @@
 <p>We&rsquo;ve mentioned the difficulty in dealing with polymorphic types, but another major shortcoming is that Shen&rsquo;s type system is simply too powerful for this mechanism to work well across all applications. Shen places no restrictions on the number of types or the relations among types that any value may belong to.</p>
 
 <p>On the bright side, a technique like this could serve as the basis for some form of automatic type-driven single dispatch; think Haskell&rsquo;s typeclasses.</p>
+
+<p><em>EDIT: Thanks to Mark Tarver for his comments on the code and corrections.</em></p>
 
 <h1 id="source-code">Source code</h1>
 

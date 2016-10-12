@@ -50,20 +50,13 @@ dynamic dispatch, but first we need to decide on a mode of
 representation. For type-reps, we'll use Shen strings.
 
 ```
-(define string-concat
-  { (list string) --> string }
-  []  -> ""
-  [S] -> S
-  [S | Ss] -> (@s S " " (string-concat Ss)))
-
 (define type->string
   { A --> string }  
   Str -> (make-string "~A" Str))
 ```
 
 `make-string` writes a value to a string using the Fortran formatting
-notation for strings. `string-concat` is a simple utility function for
-concatenating a list of strings together.
+notation for strings.
 
 The type theory for type-reps is as follows.
 
@@ -194,6 +187,8 @@ types that any value may belong to.
 On the bright side, a technique like this could serve as the basis for
 some form of automatic type-driven single dispatch; think Haskell's
 typeclasses.
+
+*EDIT: Thanks to Mark Tarver for his comments on the code and corrections.*
 
 # Source code
 
